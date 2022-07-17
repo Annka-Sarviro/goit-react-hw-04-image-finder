@@ -1,12 +1,10 @@
 import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { BiSearch } from 'react-icons/bi';
+import { Formik, Form, Field } from 'formik';
 import style from './searchbar.module.css';
+import PropTypes from 'prop-types';
 
 const Searchbar = ({ onSubmit }) => {
-  const FormError = ({ name }) => {
-    return <ErrorMessage name={name} render={() => <p>Enter number</p>} />;
-  };
-
   const handleSubmit = async (value, actions) => {
     await onSubmit(value);
     actions.resetForm();
@@ -17,18 +15,19 @@ const Searchbar = ({ onSubmit }) => {
       <Formik initialValues={{ name: '' }} onSubmit={handleSubmit}>
         <Form className={style.form}>
           <button type="submit" className={style.button}>
+            <BiSearch size="32" />
             <span className={style.button_label}>Search</span>
           </button>
-
-          <Field
-            className={style.input}
-            type="text"
-            name="name"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-          />
-          <FormError name="name" />
+          <label>
+            <Field
+              className={style.input}
+              type="text"
+              name="name"
+              autoComplete="off"
+              autoFocus
+              placeholder="Search images and photos"
+            />
+          </label>
         </Form>
       </Formik>
     </div>
@@ -36,3 +35,7 @@ const Searchbar = ({ onSubmit }) => {
 };
 
 export default Searchbar;
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func,
+};

@@ -17,9 +17,6 @@
     0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
 }
 
-/*
- * Стили компонента SearchForm
- */
 .form {
   display: flex;
   align-items: center;
@@ -31,22 +28,18 @@
 }
 
 .button {
-  display: inline-block;
+  display: inline-flex;
   width: 48px;
   height: 48px;
   border: 0;
-  background-image: url('https://image.flaticon.com/icons/svg/149/149852.svg');
-  background-size: 40%;
-  background-repeat: no-repeat;
-  background-position: center;
+  justify-content: center;
+  align-items: center;
   opacity: 0.6;
   transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   outline: none;
+  padding: 2px;
 }
-
-/* 4748f772b9a6be6beecca6a9a678892b67c8259b */
-
 .button:hover {
   opacity: 1;
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import style from './modal.module.css';
+import PropTypes from 'prop-types';
 
 export default class Modal extends Component {
   componentDidMount() {
@@ -31,3 +32,8 @@ export default class Modal extends Component {
     );
   }
 }
+
+Modal.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func,
+};

@@ -1,5 +1,6 @@
 import React from 'react';
 import style from './imageGalleryItem.module.css';
+import PropTypes from 'prop-types';
 
 export const ImageGalleryItem = ({ value, clickModalOpen }) => {
   return (
@@ -18,4 +19,13 @@ export const ImageGalleryItem = ({ value, clickModalOpen }) => {
       </li>
     </div>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  value: PropTypes.shape({
+    id: PropTypes.number,
+    webformatURL: PropTypes.string,
+    tags: PropTypes.string,
+  }),
+  clickModalOpen: PropTypes.func,
 };
