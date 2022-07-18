@@ -3,14 +3,13 @@ import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import PropTypes from 'prop-types';
 import Modal from '../Modal';
 import Loader from '../Loader';
-import Button from 'components/Button/Button';
+
 import api from '../../services/image-api';
 import style from './imageGallery.module.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 export default class ImageGallery extends Component {
   state = {
-    page: 1,
     hits: [],
     isLoading: false,
     isModalOpen: false,
@@ -19,23 +18,21 @@ export default class ImageGallery extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const value = this.props.value;
-    const page = this.state.page;
-
-    if (prevProps.value !== this.props.value) {
-      this.setState({ page: 1, hits: [] });
+    const page = this.props.page;
+    if (prevProps.value !== value) {
+      this.setState({ hits: [] });
     }
-    if (
-      prevProps.value !== this.props.value ||
-      prevState.page !== this.state.page
-    ) {
+    if (!value) {
+      this.setState({ isLoading: false });
+      return Notify.warning('Enter saerch value');
+    }
+    if (prevProps.value !== value || prevProps.page !== page) {
       try {
         this.setState({ isLoading: true });
-        if (!value) {
-          this.setState({ isLoading: false });
-          return Notify.warning('Enter saerch value');
-        }
+
         const galleryValues = await api.fetchImage(value, page);
-        const hitsValue = galleryValues.hits;
+
+        const hitsValue = await galleryValues.hits;
         this.setState(state => ({
           hits: [...state.hits, ...hitsValue],
           isLoading: false,
@@ -57,18 +54,11 @@ export default class ImageGallery extends Component {
     }));
   };
 
-  buttonHandler = e => {
-    e.preventDefault();
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
   render() {
     const values = this.state.hits;
 
     return (
       <div>
-        {this.state.isLoading && <Loader />}
         <ul className={style.gallery}>
           {values.map(value => {
             return (
@@ -81,9 +71,10 @@ export default class ImageGallery extends Component {
             );
           })}
         </ul>
-        {this.state.hits.length > 0 && (
-          <Button onClick={this.buttonHandler}>Load more</Button>
-        )}
+        {this.state.isLoading && <Loader />}
+        {this.state.hits.length > 0 &&
+          this.state.isLoading &&
+          this.props.children}
 
         {this.state.isModalOpen && (
           <Modal onClose={this.toggleModal}>
