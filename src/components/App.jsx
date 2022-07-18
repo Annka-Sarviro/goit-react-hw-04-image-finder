@@ -9,7 +9,7 @@ export class App extends Component {
   state = { searchValue: '', page: 1 };
 
   formSubmitHandler = value => {
-    this.setState({ searchValue: value, page: 1, hits: [] });
+    this.setState({ searchValue: value, page: 1 });
   };
 
   buttonHandler = e => {

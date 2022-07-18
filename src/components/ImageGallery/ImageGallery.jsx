@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import PropTypes from 'prop-types';
+import * as Scroll from 'react-scroll';
+
 import Modal from '../Modal';
 import Loader from '../Loader';
 
@@ -40,6 +42,14 @@ export default class ImageGallery extends Component {
       } catch (error) {
         this.setState({ error: true, isLoading: false });
         console.log(error);
+      } finally {
+        const scroll = Scroll.animateScroll;
+        scroll.scrollToBottom({
+          duration: 1500,
+          delay: 100,
+          smooth: true,
+          offset: 50,
+        });
       }
     }
   }
@@ -72,9 +82,7 @@ export default class ImageGallery extends Component {
           })}
         </ul>
         {this.state.isLoading && <Loader />}
-        {this.state.hits.length > 0 &&
-          this.state.isLoading &&
-          this.props.children}
+        {this.state.hits.length > 0 && this.props.children}
 
         {this.state.isModalOpen && (
           <Modal onClose={this.toggleModal}>
