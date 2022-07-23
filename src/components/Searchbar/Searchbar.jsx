@@ -5,9 +5,8 @@ import style from './searchbar.module.css';
 import PropTypes from 'prop-types';
 
 const Searchbar = ({ onSubmit }) => {
-  const handleSubmit = async (value, actions) => {
-    await onSubmit(value);
-    actions.resetForm();
+  const handleSubmit = value => {
+    onSubmit(value.name);
   };
 
   return (

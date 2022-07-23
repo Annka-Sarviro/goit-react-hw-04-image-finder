@@ -1,36 +1,38 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import Button from 'components/Button/Button';
-
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import style from './app.module.css';
 
-export class App extends Component {
-  state = { searchValue: '', page: 1 };
+export function App() {
+  const [searchValue, setSearchValue] = useState('');
+  const [page, setPage] = useState(1);
 
-  formSubmitHandler = value => {
-    this.setState({ searchValue: value, page: 1 });
+  const resetGallery = () => {
+    setPage(1);
   };
 
-  buttonHandler = e => {
+  const formSubmitHandler = value => {
+    if (!value) {
+      return Notify.warning('Enter saerch value');
+    }
+    resetGallery();
+    setSearchValue(value);
+  };
+
+  const buttonHandler = e => {
     e.preventDefault();
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+    setPage(prevState => prevState + 1);
   };
 
-  render() {
-    return (
-      <div className={style.app}>
-        <Searchbar onSubmit={this.formSubmitHandler} />
+  return (
+    <div className={style.app}>
+      <Searchbar onSubmit={formSubmitHandler} />
 
-        <ImageGallery
-          value={this.state.searchValue.name}
-          page={this.state.page}
-        >
-          <Button onClick={this.buttonHandler}>Load more</Button>
-        </ImageGallery>
-      </div>
-    );
-  }
+      <ImageGallery value={searchValue} page={page}>
+        <Button onClick={buttonHandler}>Load more</Button>
+      </ImageGallery>
+    </div>
+  );
 }

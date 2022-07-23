@@ -9,7 +9,7 @@ export const ImageGalleryItem = ({ value, clickModalOpen }) => {
         className={style.gallery_item}
         key={value.id}
         onClick={clickModalOpen}
-        value={value}
+        value={value.value}
       >
         <img
           src={value.webformatURL}

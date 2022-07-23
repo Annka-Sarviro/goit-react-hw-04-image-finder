@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageGalleryItem } from '../ImageGalleryItem/ImageGalleryItem';
 import PropTypes from 'prop-types';
 import * as Scroll from 'react-scroll';
@@ -8,39 +8,29 @@ import Loader from '../Loader';
 
 import api from '../../services/image-api';
 import style from './imageGallery.module.css';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-export default class ImageGallery extends Component {
-  state = {
-    hits: [],
-    isLoading: false,
-    isModalOpen: false,
-    data: '',
-  };
+export default function ImageGallery({ value, page, children }) {
+  const [hits, setHits] = useState([]);
+  const [jpgData, setIpgData] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoader, setIsLoader] = useState(false);
 
-  async componentDidUpdate(prevProps, prevState) {
-    const value = this.props.value;
-    const page = this.props.page;
-    if (prevProps.value !== value) {
-      this.setState({ hits: [] });
-    }
+  useEffect(() => {
+    setHits([]);
+  }, [value]);
+
+  useEffect(() => {
     if (!value) {
-      this.setState({ isLoading: false });
-      return Notify.warning('Enter saerch value');
+      return;
     }
-    if (prevProps.value !== value || prevProps.page !== page) {
+    async function fethImages() {
+      setIsLoader(true);
       try {
-        this.setState({ isLoading: true });
-
         const galleryValues = await api.fetchImage(value, page);
-
         const hitsValue = await galleryValues.hits;
-        this.setState(state => ({
-          hits: [...state.hits, ...hitsValue],
-          isLoading: false,
-        }));
+        setHits(hits => [...hits, ...hitsValue]);
+        setIsLoader(false);
       } catch (error) {
-        this.setState({ error: true, isLoading: false });
         console.log(error);
       } finally {
         const scroll = Scroll.animateScroll;
@@ -52,52 +42,46 @@ export default class ImageGallery extends Component {
         });
       }
     }
-  }
+    fethImages();
+  }, [page, value]);
 
-  clickModalHandler = data => {
-    this.setState({ isModalOpen: true, data: data });
+  const clickModalHandler = data => {
+    setIpgData(data);
+    setIsOpen(true);
   };
 
-  toggleModal = () => {
-    this.setState(({ isModalOpen }) => ({
-      isModalOpen: !isModalOpen,
-    }));
+  const toggleModal = () => {
+    setIsOpen(!isOpen);
   };
 
-  render() {
-    const values = this.state.hits;
-
-    return (
-      <div>
-        <ul className={style.gallery}>
-          {values.map(value => {
-            return (
-              <div key={value.id}>
-                <ImageGalleryItem
-                  value={value}
-                  clickModalOpen={() => this.clickModalHandler(value)}
-                />
-              </div>
-            );
-          })}
-        </ul>
-        {this.state.isLoading && <Loader />}
-        {this.state.hits.length > 0 && this.props.children}
-
-        {this.state.isModalOpen && (
-          <Modal onClose={this.toggleModal}>
-            <img
-              src={this.state.data.largeImageURL}
-              alt={this.state.data.tags}
-              onClick={this.toggleModal}
+  return (
+    <div>
+      <ul className={style.gallery}>
+        {hits.map(hit => {
+          return (
+            <ImageGalleryItem
+              value={hit}
+              key={hit.webformatURL}
+              clickModalOpen={() => clickModalHandler(hit)}
             />
-          </Modal>
-        )}
-      </div>
-    );
-  }
+          );
+        })}
+      </ul>
+      {isLoader && <Loader />}
+      {hits.length > 0 && children}
+      {isOpen && (
+        <Modal onClose={toggleModal}>
+          <img
+            src={jpgData.largeImageURL}
+            alt={jpgData.tags}
+            onClick={toggleModal}
+          />
+        </Modal>
+      )}
+    </div>
+  );
 }
-
 ImageGallery.propTypes = {
   value: PropTypes.string,
+  page: PropTypes.number,
 };
